@@ -16,7 +16,7 @@ import type { AppVariables, Env } from '../env'
 import { AppError, ok } from '../lib/envelope'
 import { coverUrlFromKeys, toPublicImageUrls } from '../lib/images'
 import { signAdminToken } from '../lib/jwt'
-import { safeEqualString, verifyPassword } from '../lib/password'
+import { safeEqualString } from '../lib/password'
 import {
   buildEncyclopediaImageKey,
   extForMime,
@@ -65,13 +65,8 @@ adminRoutes.post('/login', async (c) => {
   }
 
   const usernameOk = safeEqualString(body.username, c.env.ADMIN_USERNAME ?? '')
-  const passwordOk = await verifyPassword(
-    body.password,
-    c.env.ADMIN_PASSWORD_HASH ?? '',
-  )
-  console.log(body.username, c.env.ADMIN_USERNAME, usernameOk);
-  console.log(body.password, c.env.ADMIN_PASSWORD_HASH, passwordOk);
-  
+  const passwordOk = safeEqualString(body.password, c.env.ADMIN_PASSWORD ?? '')
+
   if (!usernameOk || !passwordOk) {
     throw new AppError('UNAUTHORIZED', '账号或密码错误', 401)
   }

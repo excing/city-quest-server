@@ -1,25 +1,10 @@
 /**
- * Callers: admin login route.
- * Schema: ADMIN_PASSWORD_HASH bcrypt in env (no admin table).
- * User: 开始阶段B 和 C, 完成产品闭环.
+ * Callers: admin login route (`src/routes/admin.ts`).
+ * Schema: ADMIN_PASSWORD plain env (no admin table).
+ * User: 服务端使用明文配置, 不用做hash.
  */
-import bcrypt from 'bcryptjs'
 
-export async function verifyPassword(
-  plain: string,
-  hash: string,
-): Promise<boolean> {
-  if (!plain || !hash) {
-    return false
-  }
-  try {
-    return await bcrypt.compare(plain, hash)
-  } catch {
-    return false
-  }
-}
-
-/** Reduce obvious timing leaks on username compare */
+/** Reduce obvious timing leaks on string compare */
 export function safeEqualString(a: string, b: string): boolean {
   if (a.length !== b.length) {
     let diff = a.length ^ b.length

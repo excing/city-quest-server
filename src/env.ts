@@ -4,7 +4,7 @@ export interface Env {
   WECHAT_APPID: string
   WECHAT_SECRET: string
   ADMIN_USERNAME: string
-  ADMIN_PASSWORD_HASH: string
+  ADMIN_PASSWORD: string
   IMAGE_PUBLIC_BASE_URL: string
   CORS_ORIGIN: string
   IMAGES: R2Bucket

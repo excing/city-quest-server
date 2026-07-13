@@ -38,11 +38,9 @@ npm run db:migrate
 # 在 Neon SQL Editor 执行 src/db/seed.sql
 ```
 
-### 管理密码哈希
+### 管理账号
 
-```bash
-node -e "import('bcryptjs').then(b=>b.hash('your-password',10).then(console.log))"
-```
+在 `.dev.vars` / 平台环境变量中配置明文 `ADMIN_USERNAME` 与 `ADMIN_PASSWORD` 即可（无需本地 hash；平台侧可按密钥类型托管）。
 
 ## 已实现 API（阶段 A–C）
 
