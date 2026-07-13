@@ -1,0 +1,41 @@
+{
+  "name": "city-quest-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "我的城市探秘 API — Cloudflare Workers + Hono + Neon + R2",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.44.2",
+    "hono": "^4.8.3",
+    "jose": "^6.0.11",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250620.0",
+    "@types/bcryptjs": "^2.4.6",
+    "drizzle-kit": "^0.31.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "wrangler": "4.20.5"
+  },
+  "overrides": {
+    "wrangler": {
+      "@cloudflare/workers-types": "$@cloudflare/workers-types"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

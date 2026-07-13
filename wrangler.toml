@@ -1,0 +1,23 @@
+name = "city-quest-server"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+# R2 bucket binding — create bucket in CF dashboard, then set name here
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "city-quest-images"
+preview_bucket_name = "city-quest-images-preview"
+
+# Non-secret vars (override per env as needed)
+[vars]
+IMAGE_PUBLIC_BASE_URL = "https://img.example.com/"
+CORS_ORIGIN = "http://localhost:5173"
+
+# Secrets (set via `wrangler secret put` or .dev.vars locally):
+# DATABASE_URL
+# JWT_SECRET
+# WECHAT_APPID
+# WECHAT_SECRET
+# ADMIN_USERNAME
+# ADMIN_PASSWORD_HASH
