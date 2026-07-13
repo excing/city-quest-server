@@ -18,7 +18,8 @@ npm run typecheck
 npm test
 npm run dev
 # GET http://127.0.0.1:8787/api/v1/health
-# GET http://127.0.0.1:8787/api/v1/public/types
+# GET http://127.0.0.1:8787/config/encyclopedia-types.json  # static asset
+# GET http://127.0.0.1:8787/api/v1/public/types             # Worker fallback
 ```
 
 ### 数据库
@@ -47,7 +48,8 @@ npm run db:migrate
 | 路径 | 说明 |
 |------|------|
 | `GET /api/v1/health` | 探活 |
-| `GET /api/v1/public/types` | 百科类型 |
+| `GET /config/encyclopedia-types.json` | 百科类型（Workers static asset，推荐） |
+| `GET /api/v1/public/types` | 百科类型（Worker 兜底） |
 | `GET /api/v1/public/encyclopedias` | published 列表 |
 | `GET /api/v1/public/encyclopedias/:id` | 上架详情；可选 user JWT → `isFavorited` |
 | `POST /api/v1/auth/wechat/login` | 微信登录（`WECHAT_APPID=dev` 可本地 mock） |

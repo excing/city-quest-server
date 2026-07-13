@@ -1,4 +1,4 @@
-import encyclopediaTypes from '../config/encyclopedia-types.json'
+import encyclopediaTypes from '../assets/config/encyclopedia-types.json'
 
 export interface EncyclopediaType {
   key: string
