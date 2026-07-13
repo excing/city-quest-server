@@ -1,0 +1,7 @@
+# Public config assets (e.g. encyclopedia-types.json) are fetched cross-origin
+# by the admin console. Assets bypass Hono CORS — set ACAO here.
+# https://developers.cloudflare.com/workers/static-assets/headers/
+/config/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+  Access-Control-Max-Age: 86400

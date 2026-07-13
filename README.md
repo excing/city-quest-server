@@ -47,7 +47,7 @@ npm run db:migrate
 | 路径 | 说明 |
 |------|------|
 | `GET /api/v1/health` | 探活 |
-| `GET /config/encyclopedia-types.json` | 百科类型（Workers static asset） |
+| `GET /config/encyclopedia-types.json` | 百科类型（Workers static asset；CORS 见 `src/assets/_headers`） |
 | `GET /api/v1/public/encyclopedias` | published 列表 |
 | `GET /api/v1/public/encyclopedias/:id` | 上架详情；可选 user JWT → `isFavorited` |
 | `POST /api/v1/auth/wechat/login` | 微信登录（`WECHAT_APPID=dev` 可本地 mock） |
