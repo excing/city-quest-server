@@ -1,8 +1,7 @@
 /**
- * Callers: src/index.ts mounts /api/v1.
- * API: admin login, types, encyclopedias CRUD, uploads.
+ * Callers: src/index.ts mounts at /api/v1/admin.
+ * API: POST /login (public); types/CRUD/uploads (requireAdmin).
  * Schema: encyclopedias all statuses; R2 images; env admin credentials.
- * User: 开始阶段B 和 C, 完成产品闭环.
  */
 import { count, desc, eq, type SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -51,12 +50,13 @@ const encyclopediaBodySchema = z.object({
 
 const encyclopediaPatchSchema = encyclopediaBodySchema.partial()
 
+/** Mounted at `/api/v1/admin` — login has no JWT; other routes use requireAdmin. */
 export const adminRoutes = new Hono<{
   Bindings: Env
   Variables: AppVariables
 }>()
 
-adminRoutes.post('/admin/login', async (c) => {
+adminRoutes.post('/login', async (c) => {
   let body: z.infer<typeof loginBodySchema>
   try {
     body = loginBodySchema.parse(await c.req.json())
@@ -64,11 +64,14 @@ adminRoutes.post('/admin/login', async (c) => {
     throw new AppError('VALIDATION_ERROR', '账号或密码错误', 400)
   }
 
-  const usernameOk = safeEqualString(body.username, c.env.ADMIN_USERNAME)
+  const usernameOk = safeEqualString(body.username, c.env.ADMIN_USERNAME ?? '')
   const passwordOk = await verifyPassword(
     body.password,
-    c.env.ADMIN_PASSWORD_HASH,
+    c.env.ADMIN_PASSWORD_HASH ?? '',
   )
+  console.log(body.username, c.env.ADMIN_USERNAME, usernameOk);
+  console.log(body.password, c.env.ADMIN_PASSWORD_HASH, passwordOk);
+  
   if (!usernameOk || !passwordOk) {
     throw new AppError('UNAUTHORIZED', '账号或密码错误', 401)
   }
@@ -83,11 +86,11 @@ const protectedAdmin = new Hono<{
 }>()
 protectedAdmin.use('*', requireAdmin)
 
-protectedAdmin.get('/admin/types', (c) => {
+protectedAdmin.get('/types', (c) => {
   return c.json(ok(getEncyclopediaTypes()))
 })
 
-protectedAdmin.get('/admin/encyclopedias', async (c) => {
+protectedAdmin.get('/encyclopedias', async (c) => {
   const page = Math.max(1, Number(c.req.query('page') ?? '1') || 1)
   const pageSize = Math.min(
     100,
@@ -133,7 +136,7 @@ protectedAdmin.get('/admin/encyclopedias', async (c) => {
   )
 })
 
-protectedAdmin.post('/admin/encyclopedias', async (c) => {
+protectedAdmin.post('/encyclopedias', async (c) => {
   let body: z.infer<typeof encyclopediaBodySchema>
   try {
     body = encyclopediaBodySchema.parse(await c.req.json())
@@ -173,7 +176,7 @@ protectedAdmin.post('/admin/encyclopedias', async (c) => {
   )
 })
 
-protectedAdmin.get('/admin/encyclopedias/:id', async (c) => {
+protectedAdmin.get('/encyclopedias/:id', async (c) => {
   const id = c.req.param('id')
   const db = createDb(c.env.DATABASE_URL)
   const [row] = await db
@@ -189,7 +192,7 @@ protectedAdmin.get('/admin/encyclopedias/:id', async (c) => {
   )
 })
 
-protectedAdmin.patch('/admin/encyclopedias/:id', async (c) => {
+protectedAdmin.patch('/encyclopedias/:id', async (c) => {
   const id = c.req.param('id')
   let body: z.infer<typeof encyclopediaPatchSchema>
   try {
@@ -241,7 +244,7 @@ protectedAdmin.patch('/admin/encyclopedias/:id', async (c) => {
   )
 })
 
-protectedAdmin.delete('/admin/encyclopedias/:id', async (c) => {
+protectedAdmin.delete('/encyclopedias/:id', async (c) => {
   const id = c.req.param('id')
   const db = createDb(c.env.DATABASE_URL)
   const deleted = await db
@@ -254,7 +257,7 @@ protectedAdmin.delete('/admin/encyclopedias/:id', async (c) => {
   return c.json(ok({ id }))
 })
 
-protectedAdmin.post('/admin/uploads', async (c) => {
+protectedAdmin.post('/uploads', async (c) => {
   const form = await c.req.formData()
   const file = form.get('file')
   if (!isUploadFile(file)) {

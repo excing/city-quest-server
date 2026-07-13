@@ -1,8 +1,8 @@
 /**
- * Callers: src/index.ts mounts /api/v1 with requireUser.
- * API: GET /me; GET/POST/DELETE /me/favorites
+ * Callers: src/index.ts mounts at /api/v1/me (NOT bare /api/v1).
+ * API: GET / ; GET/POST/DELETE /favorites
  * Schema: users + favorites + encyclopedias (incl. unpublished in list).
- * User: 开始阶段B 和 C, 完成产品闭环.
+ * Important: requireUser must only cover this sub-app, never sibling admin routes.
  */
 import { and, desc, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -18,6 +18,7 @@ const favoriteBodySchema = z.object({
   encyclopediaId: z.string().uuid(),
 })
 
+/** Mounted at `/api/v1/me` so requireUser never intercepts /admin/login. */
 export const meRoutes = new Hono<{
   Bindings: Env
   Variables: AppVariables
@@ -25,7 +26,7 @@ export const meRoutes = new Hono<{
 
 meRoutes.use('*', requireUser)
 
-meRoutes.get('/me', async (c) => {
+meRoutes.get('/', async (c) => {
   const userId = c.get('userId')
   if (!userId) {
     throw new AppError('UNAUTHORIZED', '请先登录', 401)
@@ -48,7 +49,7 @@ meRoutes.get('/me', async (c) => {
   )
 })
 
-meRoutes.get('/me/favorites', async (c) => {
+meRoutes.get('/favorites', async (c) => {
   const userId = c.get('userId')
   if (!userId) {
     throw new AppError('UNAUTHORIZED', '请先登录', 401)
@@ -83,7 +84,7 @@ meRoutes.get('/me/favorites', async (c) => {
   return c.json(ok(data, { total: data.length }))
 })
 
-meRoutes.post('/me/favorites', async (c) => {
+meRoutes.post('/favorites', async (c) => {
   const userId = c.get('userId')
   if (!userId) {
     throw new AppError('UNAUTHORIZED', '请先登录', 401)
@@ -128,7 +129,7 @@ meRoutes.post('/me/favorites', async (c) => {
   return c.json(ok({ encyclopediaId: body.encyclopediaId, favorited: true }))
 })
 
-meRoutes.delete('/me/favorites/:encyclopediaId', async (c) => {
+meRoutes.delete('/favorites/:encyclopediaId', async (c) => {
   const userId = c.get('userId')
   if (!userId) {
     throw new AppError('UNAUTHORIZED', '请先登录', 401)

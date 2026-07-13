@@ -44,8 +44,10 @@ app.use('*', async (c, next) => {
 app.route('/api/v1', healthRoutes)
 app.route('/api/v1', publicRoutes)
 app.route('/api/v1', authRoutes)
-app.route('/api/v1', meRoutes)
-app.route('/api/v1', adminRoutes)
+// Scope auth middleware to path prefixes — never mount me/admin at bare /api/v1
+// with use('*'), or requireUser/requireAdmin will intercept sibling routes (e.g. admin login).
+app.route('/api/v1/me', meRoutes)
+app.route('/api/v1/admin', adminRoutes)
 
 app.notFound((c) => {
   return c.json(fail('NOT_FOUND', '接口不存在'), 404)
