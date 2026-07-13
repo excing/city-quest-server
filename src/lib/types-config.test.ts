@@ -22,7 +22,7 @@ describe('encyclopedia types config', () => {
   })
 
   it('finds by key', () => {
-    expect(findTypeByKey('scenic')?.name).toBe('美景')
+    expect(findTypeByKey('scenic')?.name).toBe('景点')
     expect(findTypeByKey('nope')).toBeUndefined()
   })
 
