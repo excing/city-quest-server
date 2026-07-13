@@ -6,11 +6,11 @@ import type { Env } from '../env'
 import { AppError, ok } from '../lib/envelope'
 import { coverUrlFromKeys, toPublicImageUrls } from '../lib/images'
 import { extractBearerToken, verifyToken } from '../lib/jwt'
-import { getEncyclopediaTypes } from '../lib/types-config'
 
 /**
  * Callers: src/index.ts mounts at /api/v1.
- * API: GET /public/types | /public/encyclopedias | /public/encyclopedias/:id
+ * API: GET /public/encyclopedias | /public/encyclopedias/:id
+ * Types: static asset GET /config/encyclopedia-types.json (not this router).
  * Schema: encyclopedias (published), optional favorites join for isFavorited.
  * User: 阅读 @docs , 然后选择合适的agents或skills, 开始进行开发.
  */
@@ -18,10 +18,6 @@ import { getEncyclopediaTypes } from '../lib/types-config'
 const LIST_INTRO_MAX = 80
 
 export const publicRoutes = new Hono<{ Bindings: Env }>()
-
-publicRoutes.get('/public/types', (c) => {
-  return c.json(ok(getEncyclopediaTypes()))
-})
 
 publicRoutes.get('/public/encyclopedias', async (c) => {
   const db = createDb(c.env.DATABASE_URL)

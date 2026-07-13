@@ -1,6 +1,6 @@
 /**
  * Callers: vitest via npm test. Unit-tests static encyclopedia types.
- * API: GET /public/types source. Schema: food/scenic/goods keys.
+ * Source: static asset + Worker import for type_key validation.
  * User: 阅读 @docs , 然后选择合适的agents或skills, 开始进行开发.
  */
 import { describe, expect, it } from 'vitest'
