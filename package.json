@@ -5,8 +5,8 @@
   "description": "我的城市探秘 API — Cloudflare Workers + Hono + Neon + R2",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "npx wrangler dev --ip 0.0.0.0",
+    "deploy": "npx wrangler deploy",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -23,12 +23,12 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250620.0",
+    "@cloudflare/workers-types": "^5.20260713.1",
     "@types/bcryptjs": "^2.4.6",
     "drizzle-kit": "^0.31.1",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
-    "wrangler": "4.20.5"
+    "wrangler": "^4.110.0"
   },
   "overrides": {
     "wrangler": {
