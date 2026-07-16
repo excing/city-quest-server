@@ -14,6 +14,21 @@ preview_bucket_name = "city-quest-images-preview"
 IMAGE_PUBLIC_BASE_URL = "https://img.example.com/"
 CORS_ORIGIN = "http://localhost:5173"
 
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = true
+persist = true
+head_sampling_rate = 1
+
 # Secrets (set via `wrangler secret put` or .dev.vars locally):
 # DATABASE_URL
 # JWT_SECRET
