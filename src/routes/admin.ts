@@ -14,7 +14,7 @@ import {
 } from '../db/schema'
 import type { AppVariables, Env } from '../env'
 import { AppError, ok } from '../lib/envelope'
-import { coverUrlFromKeys, toPublicImageUrls } from '../lib/images'
+import { coverKeyFromKeys } from '../lib/images'
 import { signAdminToken } from '../lib/jwt'
 import { safeEqualString } from '../lib/password'
 import {
@@ -119,8 +119,7 @@ protectedAdmin.get('/encyclopedias', async (c) => {
     .limit(pageSize)
     .offset((page - 1) * pageSize)
 
-  const imageBase = c.env.IMAGE_PUBLIC_BASE_URL
-  const data = rows.map((row) => serializeAdminEncyclopedia(row, imageBase))
+  const data = rows.map((row) => serializeAdminEncyclopedia(row))
 
   return c.json(
     ok(data, {
@@ -166,7 +165,7 @@ protectedAdmin.post('/encyclopedias', async (c) => {
     throw new AppError('INTERNAL_ERROR', '创建失败', 500)
   }
   return c.json(
-    ok(serializeAdminEncyclopedia(created, c.env.IMAGE_PUBLIC_BASE_URL)),
+    ok(serializeAdminEncyclopedia(created)),
     201,
   )
 })
@@ -183,7 +182,7 @@ protectedAdmin.get('/encyclopedias/:id', async (c) => {
     throw new AppError('NOT_FOUND', '百科不存在', 404)
   }
   return c.json(
-    ok(serializeAdminEncyclopedia(row, c.env.IMAGE_PUBLIC_BASE_URL)),
+    ok(serializeAdminEncyclopedia(row)),
   )
 })
 
@@ -235,7 +234,7 @@ protectedAdmin.patch('/encyclopedias/:id', async (c) => {
     throw new AppError('INTERNAL_ERROR', '更新失败', 500)
   }
   return c.json(
-    ok(serializeAdminEncyclopedia(updated, c.env.IMAGE_PUBLIC_BASE_URL)),
+    ok(serializeAdminEncyclopedia(updated)),
   )
 })
 
@@ -281,10 +280,7 @@ protectedAdmin.post('/uploads', async (c) => {
     throw new AppError('INTERNAL_ERROR', '图片上传失败', 500)
   }
 
-  const base = c.env.IMAGE_PUBLIC_BASE_URL.endsWith('/')
-    ? c.env.IMAGE_PUBLIC_BASE_URL
-    : `${c.env.IMAGE_PUBLIC_BASE_URL}/`
-  return c.json(ok({ key, url: `${base}${key}` }))
+  return c.json(ok({ key }))
 })
 
 adminRoutes.route('/', protectedAdmin)
@@ -307,10 +303,7 @@ function isUploadFile(value: unknown): value is UploadFileLike {
   )
 }
 
-function serializeAdminEncyclopedia(
-  row: typeof encyclopedias.$inferSelect,
-  imageBase: string,
-) {
+function serializeAdminEncyclopedia(row: typeof encyclopedias.$inferSelect) {
   const keys = row.images ?? []
   return {
     id: row.id,
@@ -325,8 +318,7 @@ function serializeAdminEncyclopedia(
     phone: row.phone,
     tags: row.tags ?? [],
     images: keys,
-    imageUrls: toPublicImageUrls(imageBase, keys),
-    coverUrl: coverUrlFromKeys(imageBase, keys),
+    coverKey: coverKeyFromKeys(keys),
     status: row.status,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),

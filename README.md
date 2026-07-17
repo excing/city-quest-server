@@ -55,7 +55,10 @@ npm run db:migrate
 | `GET/POST/DELETE /api/v1/me/favorites` | 收藏 |
 | `POST /api/v1/admin/login` | 管理登录 |
 | `GET/POST/PATCH/DELETE /api/v1/admin/encyclopedias` | 百科 CRUD |
-| `POST /api/v1/admin/uploads` | R2 图片上传 |
+| `POST /api/v1/admin/uploads` | R2 图片上传 → `{ key }` |
+| `GET /api/v1/files/*` | R2 图片代理读（公开；key 须为 encyclopedias/...） |
+
+业务 API 只返回图片 **key**；客户端用 `{apiBase}/api/v1/files/{key}` 拼展示地址。无需独立图片域 / `IMAGE_PUBLIC_BASE_URL`。
 
 ## 部署
 

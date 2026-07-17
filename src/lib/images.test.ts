@@ -1,53 +1,49 @@
 /**
- * Callers: vitest via npm test. Unit-tests pure image URL helpers.
- * API: none. Schema: none.
- * User: 阅读 @docs , 然后选择合适的agents或skills, 开始进行开发.
+ * Callers: vitest via npm test. Unit-tests image key helpers.
  */
 import { describe, expect, it } from 'vitest'
 import {
-  coverUrlFromKeys,
-  toPublicImageUrl,
-  toPublicImageUrls,
+  coverKeyFromKeys,
+  isSafeEncyclopediaImageKey,
+  normalizeObjectKey,
 } from './images'
 
-describe('toPublicImageUrl', () => {
-  it('joins base with trailing slash and key', () => {
-    expect(toPublicImageUrl('https://img.example.com/', 'a/b.jpg')).toBe(
-      'https://img.example.com/a/b.jpg',
-    )
-  })
+const KEY = 'encyclopedias/2026/07/a1b2c3d4-e5f6-7890-abcd-ef1234567890.jpg'
 
-  it('adds trailing slash when missing', () => {
-    expect(toPublicImageUrl('https://img.example.com', 'a/b.jpg')).toBe(
-      'https://img.example.com/a/b.jpg',
-    )
-  })
-
-  it('strips leading slash on key', () => {
-    expect(toPublicImageUrl('https://img.example.com/', '/a/b.jpg')).toBe(
-      'https://img.example.com/a/b.jpg',
-    )
+describe('normalizeObjectKey', () => {
+  it('strips leading slash', () => {
+    expect(normalizeObjectKey(`/${KEY}`)).toBe(KEY)
+    expect(normalizeObjectKey(KEY)).toBe(KEY)
   })
 })
 
-describe('toPublicImageUrls', () => {
-  it('maps keys immutably', () => {
-    const keys = ['1.png', '2.png']
-    expect(toPublicImageUrls('https://img.example.com/', keys)).toEqual([
-      'https://img.example.com/1.png',
-      'https://img.example.com/2.png',
-    ])
-  })
-})
-
-describe('coverUrlFromKeys', () => {
+describe('coverKeyFromKeys', () => {
   it('returns null for empty list', () => {
-    expect(coverUrlFromKeys('https://img.example.com/', [])).toBeNull()
+    expect(coverKeyFromKeys([])).toBeNull()
   })
 
   it('returns first key as cover', () => {
+    expect(coverKeyFromKeys([KEY, 'other.jpg'])).toBe(KEY)
+  })
+})
+
+describe('isSafeEncyclopediaImageKey', () => {
+  it('accepts valid encyclopedia keys', () => {
+    expect(isSafeEncyclopediaImageKey(KEY)).toBe(true)
     expect(
-      coverUrlFromKeys('https://img.example.com/', ['cover.jpg', '2.jpg']),
-    ).toBe('https://img.example.com/cover.jpg')
+      isSafeEncyclopediaImageKey(
+        'encyclopedias/2026/07/a1b2c3d4-e5f6-7890-abcd-ef1234567890.webp',
+      ),
+    ).toBe(true)
+  })
+
+  it('rejects path traversal and foreign prefixes', () => {
+    expect(isSafeEncyclopediaImageKey('../etc/passwd')).toBe(false)
+    expect(isSafeEncyclopediaImageKey('encyclopedias/../secret.jpg')).toBe(
+      false,
+    )
+    expect(isSafeEncyclopediaImageKey('other/2026/07/uuid.jpg')).toBe(false)
+    expect(isSafeEncyclopediaImageKey('')).toBe(false)
+    expect(isSafeEncyclopediaImageKey(`/${KEY}`)).toBe(true)
   })
 })

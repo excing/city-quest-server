@@ -4,7 +4,7 @@ import { createDb } from '../db/client'
 import { encyclopedias, favorites } from '../db/schema'
 import type { Env } from '../env'
 import { AppError, ok } from '../lib/envelope'
-import { coverUrlFromKeys, toPublicImageUrls } from '../lib/images'
+import { coverKeyFromKeys } from '../lib/images'
 import { extractBearerToken, verifyToken } from '../lib/jwt'
 
 /**
@@ -84,8 +84,7 @@ publicRoutes.get('/public/encyclopedias/:id', async (c) => {
     }
   }
 
-  const imageBase = c.env.IMAGE_PUBLIC_BASE_URL
-  const images = toPublicImageUrls(imageBase, row.images ?? [])
+  const keys = row.images ?? []
 
   return c.json(
     ok({
@@ -100,8 +99,8 @@ publicRoutes.get('/public/encyclopedias/:id', async (c) => {
       avgPrice: row.avgPrice,
       phone: row.phone,
       tags: row.tags ?? [],
-      images,
-      coverUrl: coverUrlFromKeys(imageBase, row.images ?? []),
+      images: keys,
+      coverKey: coverKeyFromKeys(keys),
       status: row.status,
       isFavorited,
       createdAt: row.createdAt.toISOString(),

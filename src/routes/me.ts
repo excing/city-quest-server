@@ -11,7 +11,7 @@ import { createDb } from '../db/client'
 import { encyclopedias, favorites, users } from '../db/schema'
 import type { AppVariables, Env } from '../env'
 import { AppError, ok } from '../lib/envelope'
-import { coverUrlFromKeys } from '../lib/images'
+import { coverKeyFromKeys } from '../lib/images'
 import { requireUser } from '../middleware/auth-user'
 
 const favoriteBodySchema = z.object({
@@ -70,14 +70,13 @@ meRoutes.get('/favorites', async (c) => {
     .where(eq(favorites.userId, userId))
     .orderBy(desc(favorites.createdAt))
 
-  const imageBase = c.env.IMAGE_PUBLIC_BASE_URL
   const data = rows.map((row) => ({
     encyclopediaId: row.encyclopediaId,
     name: row.name,
     typeKey: row.typeKey,
     intro: row.intro,
     status: row.status,
-    coverUrl: coverUrlFromKeys(imageBase, row.images ?? []),
+    coverKey: coverKeyFromKeys(row.images ?? []),
     favoritedAt: row.favoritedAt.toISOString(),
   }))
 

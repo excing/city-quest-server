@@ -10,8 +10,8 @@ bucket_name = "city-quest-images"
 preview_bucket_name = "city-quest-images-preview"
 
 # Non-secret vars (override per env as needed)
+# Images: GET /api/v1/files/* via R2 binding IMAGES (no public CDN base URL)
 [vars]
-IMAGE_PUBLIC_BASE_URL = "https://img.example.com/"
 CORS_ORIGIN = "http://localhost:5173"
 
 [observability]

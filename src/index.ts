@@ -10,6 +10,7 @@ import {
 } from './lib/envelope'
 import { adminRoutes } from './routes/admin'
 import { authRoutes } from './routes/auth'
+import { filesRoutes } from './routes/files'
 import { healthRoutes } from './routes/health'
 import { meRoutes } from './routes/me'
 import { publicRoutes } from './routes/public'
@@ -42,6 +43,7 @@ app.use('*', async (c, next) => {
 })
 
 app.route('/api/v1', healthRoutes)
+app.route('/api/v1', filesRoutes)
 app.route('/api/v1', publicRoutes)
 app.route('/api/v1', authRoutes)
 // Scope auth middleware to path prefixes — never mount me/admin at bare /api/v1
