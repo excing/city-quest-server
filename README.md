@@ -50,15 +50,19 @@ npm run db:migrate
 | `GET /config/encyclopedia-types.json` | 百科类型（Workers static asset；CORS 见 `src/assets/_headers`） |
 | `GET /api/v1/public/encyclopedias` | published 列表 |
 | `GET /api/v1/public/encyclopedias/:id` | 上架详情；可选 user JWT → `isFavorited` |
-| `POST /api/v1/auth/wechat/login` | 微信登录（`WECHAT_APPID=dev` 可本地 mock） |
-| `GET /api/v1/me` | 当前用户 |
+| `POST /api/v1/auth/wechat/login` | 微信登录（`WECHAT_APPID=dev` 可本地 mock）；`user` 含 `phone` |
+| `GET /api/v1/me` | 当前用户 `{ id, nickname, avatarUrl, phone }`（`avatarUrl` 为 R2 key） |
+| `POST /api/v1/me` | 更新资料 `{ nickname?, phone?, avatarKey? }`（手机号仅格式校验；用 POST 以兼容小程序） |
+| `POST /api/v1/me/avatar` | 用户头像上传 → `{ key }`（`avatars/yyyy/mm/uuid.ext`） |
 | `GET/POST/DELETE /api/v1/me/favorites` | 收藏 |
 | `POST /api/v1/admin/login` | 管理登录 |
 | `GET/POST/PATCH/DELETE /api/v1/admin/encyclopedias` | 百科 CRUD |
-| `POST /api/v1/admin/uploads` | R2 图片上传 → `{ key }` |
-| `GET /api/v1/files/*` | R2 图片代理读（公开；key 须为 encyclopedias/...） |
+| `POST /api/v1/admin/uploads` | 百科 R2 图片上传 → `{ key }` |
+| `GET /api/v1/files/*` | R2 图片代理读（公开；key 须为 `encyclopedias/...` 或 `avatars/...`） |
 
 业务 API 只返回图片 **key**；客户端用 `{apiBase}/api/v1/files/{key}` 拼展示地址。无需独立图片域 / `IMAGE_PUBLIC_BASE_URL`。
+
+迁移：新增 `users.phone` 见 `src/db/migrations/0001_user_phone.sql`（`npm run db:migrate`）。
 
 ## 部署
 

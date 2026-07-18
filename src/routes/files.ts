@@ -1,13 +1,13 @@
 /**
  * Callers: src/index.ts mounts at /api/v1.
- * API: GET /files/* — stream R2 objects (encyclopedia images).
- * Auth: public read; key must match encyclopedia image layout.
+ * API: GET /files/* — stream R2 objects (encyclopedia + avatar images).
+ * Auth: public read; key must match encyclopedia or avatar layout.
  */
 import { Hono } from 'hono'
 import type { Env } from '../env'
 import { AppError } from '../lib/envelope'
 import {
-  isSafeEncyclopediaImageKey,
+  isSafePublicImageKey,
   normalizeObjectKey,
 } from '../lib/images'
 
@@ -22,7 +22,7 @@ export const filesRoutes = new Hono<{ Bindings: Env }>()
 
 filesRoutes.get('/files/*', async (c) => {
   const key = extractFileKey(new URL(c.req.url).pathname)
-  if (!key || !isSafeEncyclopediaImageKey(key)) {
+  if (!key || !isSafePublicImageKey(key)) {
     throw new AppError('NOT_FOUND', '文件不存在', 404)
   }
 

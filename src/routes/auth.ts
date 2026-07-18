@@ -94,6 +94,7 @@ authRoutes.post('/auth/wechat/login', async (c) => {
         id: user.id,
         nickname: user.nickname,
         avatarUrl: user.avatarUrl,
+        phone: user.phone,
       },
     }),
   )

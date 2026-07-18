@@ -1,9 +1,9 @@
 /**
- * Callers: vitest. R2 key helpers. API: admin uploads. Schema: key path.
- * User: 开始阶段B 和 C, 完成产品闭环.
+ * Callers: vitest. R2 key helpers. API: admin + me avatar uploads. Schema: key path.
  */
 import { describe, expect, it } from 'vitest'
 import {
+  buildAvatarImageKey,
   buildEncyclopediaImageKey,
   extForMime,
   isAllowedImageMime,
@@ -22,12 +22,21 @@ describe('r2 helpers', () => {
     expect(extForMime('image/png')).toBe('png')
   })
 
-  it('builds key path', () => {
+  it('builds encyclopedia key path', () => {
     const key = buildEncyclopediaImageKey(
       new Date('2026-07-13T00:00:00Z'),
       'jpg',
       'abc',
     )
     expect(key).toBe('encyclopedias/2026/07/abc.jpg')
+  })
+
+  it('builds avatar key path', () => {
+    const key = buildAvatarImageKey(
+      new Date('2026-07-13T00:00:00Z'),
+      'png',
+      'def',
+    )
+    expect(key).toBe('avatars/2026/07/def.png')
   })
 })

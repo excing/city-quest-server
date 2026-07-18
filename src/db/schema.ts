@@ -16,7 +16,10 @@ export const users = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     openid: text('openid').notNull(),
     nickname: text('nickname'),
+    /** R2 object key for avatar (avatars/yyyy/mm/uuid.ext); not a public URL. */
     avatarUrl: text('avatar_url'),
+    /** Optional; format-only validation (no SMS). */
+    phone: text('phone'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),

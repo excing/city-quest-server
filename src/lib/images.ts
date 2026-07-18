@@ -1,7 +1,7 @@
 /**
- * Encyclopedia image object-key helpers (key-only API contract).
+ * Image object-key helpers (key-only API contract).
  * Clients resolve display URLs: {apiBase}/api/v1/files/{key}
- * Callers: files route (key safety); admin/public/me coverKey; tests.
+ * Callers: files route (key safety); admin/public/me coverKey & avatar; tests.
  */
 
 export const FILES_URL_PREFIX = '/api/v1/files/'
@@ -10,11 +10,14 @@ export const FILES_URL_PREFIX = '/api/v1/files/'
 const SAFE_ENCYCLOPEDIA_KEY =
   /^encyclopedias\/\d{4}\/\d{2}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/i
 
+const SAFE_AVATAR_KEY =
+  /^avatars\/\d{4}\/\d{2}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/i
+
 export function normalizeObjectKey(key: string): string {
   return key.startsWith('/') ? key.slice(1) : key
 }
 
-export function isSafeEncyclopediaImageKey(key: string): boolean {
+function isSafeNormalizedKey(key: string, pattern: RegExp): boolean {
   const normalized = normalizeObjectKey(key)
   if (
     !normalized ||
@@ -24,7 +27,20 @@ export function isSafeEncyclopediaImageKey(key: string): boolean {
   ) {
     return false
   }
-  return SAFE_ENCYCLOPEDIA_KEY.test(normalized)
+  return pattern.test(normalized)
+}
+
+export function isSafeEncyclopediaImageKey(key: string): boolean {
+  return isSafeNormalizedKey(key, SAFE_ENCYCLOPEDIA_KEY)
+}
+
+export function isSafeAvatarImageKey(key: string): boolean {
+  return isSafeNormalizedKey(key, SAFE_AVATAR_KEY)
+}
+
+/** Public file proxy: encyclopedia images + user avatars. */
+export function isSafePublicImageKey(key: string): boolean {
+  return isSafeEncyclopediaImageKey(key) || isSafeAvatarImageKey(key)
 }
 
 /** First key is the cover by convention; empty → null. */
